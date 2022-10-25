@@ -55,7 +55,7 @@ jobs:
       - name: git push to gh-pages branch
         env:
           SECRET: ${{ secrets.email }}
-      - run: |
+        run: |
           git config user.name hidekingerz
           git config user.email "$SECRET"
           git add -A
