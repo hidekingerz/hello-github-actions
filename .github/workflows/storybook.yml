@@ -1,0 +1,77 @@
+name: Storybook preview deploy
+
+on:
+  pull_request:
+
+jobs:
+  Build-Storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: Cache
+        uses: actions/cache@v3
+        id: node_modules_cache_id
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - run: echo '${{ toJSON(steps.node_modules_cache_id.outputs) }}'
+      - if: ${{ steps.node_modules_cache_id.outputs.cache-hit != 'true' }}
+        run: npm install
+      - run: npm ls --depth=0
+      - name: build storybook
+        run: npm run build-storybook
+      - run: ls -l
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./storybook-static
+
+  Deploy:
+    needs: Build-Storybook
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
+      - uses: actions/download-artifact@v3
+        with:
+          name: github-pages
+          path: ${{ github.head_ref }}
+      - name: unarchived
+        run: |
+          ls -R
+          cd ${{ github.head_ref }}
+          tar xvf artifact.tar
+          rm artifact.tar
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: git push to gh-pages branch
+        env:
+          SECRET: ${{ secrets.email }}
+      - run: |
+          git config user.name hidekingerz
+          git config user.email "$SECRET"
+          git add -A
+          git commit -m "${{github.head_ref}}" -a
+          git push
+
+  Comment:
+    needs: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Thanks for reviewing.  Storybook is [here](https://hidekingerz.github.io/hello-github-actions/${{ github.head_ref }}/)'
+            })
