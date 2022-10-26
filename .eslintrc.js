@@ -3,22 +3,28 @@ module.exports = {
     es6: true,
     browser: true,
     node: true,
-    amd: true
+    amd: true,
   },
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
-    ecmaVersion: 11,
-    sourceType: 'module'
+    ecmaVersion: 12,
+    sourceType: 'module',
   },
-  extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:react-hooks/recommended', 'plugin:jest/recommended', 'prettier', 'plugin:storybook/recommended'],
-  plugins: ['react', 'react-hooks', "jsx-expressions"],
+  extends: [
+    'eslint:recommended',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+    'plugin:jest/recommended',
+    'prettier',
+    'plugin:storybook/recommended',
+  ],
+  plugins: ['react', 'react-hooks'],
   rules: {
     'no-var': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
-    "jsx-expressions/strict-logical-expressions": "error"
   },
   settings: {
     react: {
@@ -26,7 +32,7 @@ module.exports = {
       pragma: 'React',
       fragment: 'Fragment',
       version: 'detect',
-      flowVersion: '0.53'
-    }
-  }
+      flowVersion: '0.53',
+    },
+  },
 };

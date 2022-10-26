@@ -1,18 +1,11 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Layout from './layout';
-
-const Main = () => {
-  return (
-    <div>main</div>
-  )
-}
+import { Main } from '../features/main/Main';
 
 const Sub = () => {
-  return (
-    <div>sub</div>
-  )
-}
+  return <div>sub</div>;
+};
 
 export default function App() {
   return (
